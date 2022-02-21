@@ -4,6 +4,7 @@ interface Params {
     date: string;
     message: string;
     sendAs: [];
+    ignoreIfInPast: boolean;
 }
 
 const script: Firebot.CustomScript<Params> = {
@@ -12,7 +13,7 @@ const script: Firebot.CustomScript<Params> = {
             name: "Time Until",
             description: "Send a message about the time until an event like a game release or a birthday",
             author: "oh_mg",
-            version: "1.0",
+            version: "1.1.0",
             firebotVersion: "5",
         };
     },
@@ -40,22 +41,33 @@ const script: Firebot.CustomScript<Params> = {
                 secondaryDescription: "'Bot' has no effect if no bot user is set up",
                 options: ["Streamer", "Bot"],
             },
+            ignoreIfInPast: {
+                type: "boolean",
+                default: true,
+                description: "Don't send message if target date is in the past",
+            },
         };
     },
     run: (runRequest) => {
         const {logger} = runRequest.modules;
 
-        logger.info(runRequest.parameters.message);
-        logger.info("" + Date.parse(runRequest.parameters.date));
-        logger.info("" + runRequest.parameters.sendAs);
-
         const now = new Date()
         const targetDate = Date.parse(runRequest.parameters.date)
+        if (isNaN(targetDate)) {
+            return Promise.reject("Unable to parse date")
+        }
+
         const sendAs = runRequest.parameters.sendAs
         const message = runRequest.parameters.message
 
         // @ts-ignore
-        const totalSeconds = (targetDate - now) / 1000
+        const totalSeconds = Math.ceil((targetDate - now) / 1000)
+        logger.debug(`Total seconds: ${totalSeconds}`)
+
+        if (totalSeconds < 0 &&runRequest.parameters.ignoreIfInPast) {
+            return Promise.reject("Target date is in the past and ignoreIfInPast = true")
+        }
+
         const totalMinutes = Math.ceil(totalSeconds / 60)
         const totalHours = Math.ceil(totalSeconds / (60*60))
         const totalDays = Math.ceil(totalSeconds / (60*60*24))

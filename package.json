@@ -1,7 +1,7 @@
 {
   "name": "firebot-time-until",
   "scriptOutputName": "TimeUntil",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Firebot script to show how long until a given time",
   "main": "",
   "scripts": {

@@ -15,7 +15,8 @@ A Firebot custom script to show in chat how long until a given time
 9. Enter the target date, message and who to send the message as
 10. Click Add, then Save
 11. Test it out
-
+12. If nothing is written to chat, check the developer console (Tools > Toggle Developer Tools) for any recent ERROR messages. 
+The usual suspects are that the target date is in the past or the target date isn't in a supported format. 
 
 **A note on %rDays vs %days:**
 
